@@ -43,13 +43,13 @@ FlashAttention-3 heroically hides most of this latency through pingpong scheduli
 
 ```
                     ┌─────────────────────────────────────────┐
-                    │         H100 Attention Pipeline          │
+                    │         H100 Attention Pipeline         │
                     │                                         │
                     │  Tensor Cores ──── 989 TFLOPS (matmul)  │
                     │       │                                 │
                     │       ▼                                 │
                     │  ┌─────────┐                            │
-                    │  │  MUFU   │◄── 3.9 TFLOPS (shared)    │
+                    │  │  MUFU   │◄── 3.9 TFLOPS (shared)     │
                     │  │ (exp,   │    log, sin, cos, rsqrt    │
                     │  │  log,   │    ALL compete for this    │
                     │  │  sin…)  │                            │
@@ -74,22 +74,22 @@ A fully-pipelined exponential unit that **never shares, never stalls, never bloc
 
 ```
                     ┌──────────────────────────────────────────┐
-                    │      Hardened Softmax Pipeline            │
+                    │      Hardened Softmax Pipeline           │
                     │                                          │
-                    │  GEMM0 (S = Q·Kᵀ) ─── Tensor Cores     │
+                    │  GEMM0 (S = Q·Kᵀ) ─── Tensor Cores       │
                     │       │                                  │
                     │       ▼                                  │
                     │  ┌──────────────────────┐                │
-                    │  │  Dedicated Exp Unit  │ ← 5 stages    │
+                    │  │  Dedicated Exp Unit  │ ← 5 stages     │
                     │  │  1 result/cycle      │   550 LUTs     │
                     │  │  400 MHz (FPGA)      │   0 DSPs       │
                     │  │  ~2+ GHz (5nm ASIC)  │   ZERO sharing │
                     │  └──────────┬───────────┘                │
                     │             │ ← NO STALL                 │
-                    │             ▼                             │
-                    │  GEMM1 (O = P·V) ─── Tensor Cores       │
+                    │             ▼                            │
+                    │  GEMM1 (O = P·V) ─── Tensor Cores        │ 
                     │                                          │
-                    │  PERF_STALL_CYCLES = 0 ← proven in RTL  │
+                    │  PERF_STALL_CYCLES = 0 ← proven in RTL   │
                     └──────────────────────────────────────────┘
 ```
 
